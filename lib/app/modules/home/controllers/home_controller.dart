@@ -145,10 +145,10 @@ class HomeController extends GetxController {
     itemList.assignAll(filteredItems);
   }
 
-  deleteItem(Item item) async {
+  deleteItem(String itemId) async {
     final response = await http.delete(
         Uri.parse(
-          '$SERVER_URI/private/items/${item.id}',
+          '$SERVER_URI/private/items/$itemId',
         ),
         headers: <String, String>{
           'Authorisation': storage.read("token"),
@@ -172,52 +172,13 @@ class HomeController extends GetxController {
   }
 
   void showAddItemDialog(BuildContext context) async {
-    // String title = '';
-    // String description = '';
-
-    // Get.dialog(
-    //   AlertDialog(
-    //     title: Text('Add Item'),
-    //     content: Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       children: [
-    //         TextFormField(
-    //           decoration: InputDecoration(
-    //             labelText: 'Title',
-    //           ),
-    //           onChanged: (value) => title = value,
-    //         ),
-    //         SizedBox(height: 16),
-    //         TextFormField(
-    //           decoration: InputDecoration(
-    //             labelText: 'Description',
-    //           ),
-    //           onChanged: (value) => description = value,
-    //         ),
-    //       ],
-    //     ),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () => Get.back(),
-    //         child: Text('Cancel'),
-    //       ),
-    //       ElevatedButton(
-    //         onPressed: () {
-    //           // TODO: Send the item data to the backend
-    //           Get.back();
-    //         },
-    //         child: Text('Add'),
-    //       ),
-    //     ],
-    //   ),
-    // );
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
         String title = '';
         String description = '';
         return CupertinoAlertDialog(
-          title: Text('Create Item'),
+          title: const Text('Create Item'),
           content: Column(
             children: [
               const SizedBox(height: 10),
@@ -270,7 +231,7 @@ class HomeController extends GetxController {
                   );
                 }
 
-                Get.back();
+                Navigator.pop(context);
               },
             ),
           ],
@@ -280,7 +241,9 @@ class HomeController extends GetxController {
   }
 
   void refreshAll() async {
-    saveItems(await fetchItems());
+    final items = await fetchItems();
+
+    saveItems(items);
     loadItems();
   }
 

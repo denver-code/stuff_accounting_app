@@ -80,7 +80,7 @@ class HomeView extends GetView<HomeController> {
                           ),
                         ),
                         onDismissed: (direction) {
-                          controller.deleteItem(item);
+                          controller.deleteItem(item.id);
                         },
                         child: ListTile(
                           title: Text(item.title),
