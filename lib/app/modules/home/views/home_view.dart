@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -162,7 +163,7 @@ class HomeView extends GetView<HomeController> {
                     child: const Icon(Icons.qr_code_rounded),
                   ),
                   FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () => controller.showAddItemDialog(context),
                     child: const Icon(Icons.add),
                   )
                 ],

@@ -1,4 +1,5 @@
 import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -71,7 +72,7 @@ class HomeController extends GetxController {
       } else {
         return Get.snackbar(
           "SAA",
-          "Looks like Item are not exist or we don't have it in our DataBase!",
+          "Looks like Item are not exist or we don't have it in our DataBase, you also can try look up by search!",
           icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.grey,
@@ -168,6 +169,114 @@ class HomeController extends GetxController {
         backgroundColor: Colors.grey,
       );
     }
+  }
+
+  void showAddItemDialog(BuildContext context) async {
+    // String title = '';
+    // String description = '';
+
+    // Get.dialog(
+    //   AlertDialog(
+    //     title: Text('Add Item'),
+    //     content: Column(
+    //       mainAxisSize: MainAxisSize.min,
+    //       children: [
+    //         TextFormField(
+    //           decoration: InputDecoration(
+    //             labelText: 'Title',
+    //           ),
+    //           onChanged: (value) => title = value,
+    //         ),
+    //         SizedBox(height: 16),
+    //         TextFormField(
+    //           decoration: InputDecoration(
+    //             labelText: 'Description',
+    //           ),
+    //           onChanged: (value) => description = value,
+    //         ),
+    //       ],
+    //     ),
+    //     actions: [
+    //       TextButton(
+    //         onPressed: () => Get.back(),
+    //         child: Text('Cancel'),
+    //       ),
+    //       ElevatedButton(
+    //         onPressed: () {
+    //           // TODO: Send the item data to the backend
+    //           Get.back();
+    //         },
+    //         child: Text('Add'),
+    //       ),
+    //     ],
+    //   ),
+    // );
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String title = '';
+        String description = '';
+        return CupertinoAlertDialog(
+          title: Text('Create Item'),
+          content: Column(
+            children: [
+              const SizedBox(height: 10),
+              CupertinoTextField(
+                placeholder: 'Title',
+                onChanged: (value) => title = value,
+              ),
+              const SizedBox(height: 10),
+              CupertinoTextField(
+                placeholder: 'Description',
+                onChanged: (value) => description = value,
+              ),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.pop(context),
+            ),
+            CupertinoDialogAction(
+              child: const Text('Create'),
+              onPressed: () async {
+                Map payload = {"title": title, "description": description};
+                final response = await http.post(
+                  Uri.parse('$SERVER_URI/private/items/new'),
+                  headers: <String, String>{
+                    'Content-Type': 'application/json; charset=UTF-8',
+                    "Authorisation": storage.read("token")
+                  },
+                  body: jsonEncode(payload),
+                );
+                if (response.statusCode == 200) {
+                  refreshAll();
+                  Get.snackbar(
+                    "SAA",
+                    "Item created!",
+                    icon: const Icon(Icons.close_fullscreen_outlined,
+                        color: Colors.white),
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.grey,
+                  );
+                } else {
+                  Get.snackbar(
+                    "SAA",
+                    "Looks like some of your data are completely wrong or you don't have access to creation:[",
+                    icon: const Icon(Icons.error_outline_outlined,
+                        color: Colors.white),
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.grey,
+                  );
+                }
+
+                Get.back();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void refreshAll() async {
