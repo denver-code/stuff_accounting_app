@@ -21,9 +21,8 @@ class AuthorisationController extends GetxController {
   processAuthorisation({isReg = false}) async {
     String email = emailTextController.text;
     String password = passwordTextController.text;
-
     if (!GetUtils.isEmail(email)) {
-      Get.snackbar(
+      return Get.snackbar(
         "SAA",
         "Looks like your email are completely wrong :[",
         icon: const Icon(Icons.error_outline_outlined, color: Colors.white),

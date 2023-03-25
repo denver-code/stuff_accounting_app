@@ -43,7 +43,7 @@ class HomeView extends GetView<HomeController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                width: Get.width / 1.35,
+                width: Get.width / 1.7,
                 height: Get.height / 15.5,
                 decoration: const BoxDecoration(
                   color: Color.fromRGBO(255, 255, 255, 1),
@@ -91,6 +91,13 @@ class HomeView extends GetView<HomeController> {
                       labelText: "Search",
                       hintText: "The Last Of Us 2",
                     )),
+              ),
+              FloatingActionButton(
+                heroTag: 'upc_adder',
+                onPressed: () {
+                  Get.toNamed(Routes.UPC);
+                },
+                child: const Icon(Icons.qr_code_rounded),
               ),
               FloatingActionButton(
                 onPressed: () {},

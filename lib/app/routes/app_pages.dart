@@ -7,6 +7,8 @@ import '../modules/detail/bindings/detail_binding.dart';
 import '../modules/detail/views/detail_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/upc/bindings/upc_binding.dart';
+import '../modules/upc/views/upc_view.dart';
 
 part 'app_routes.dart';
 
@@ -35,6 +37,11 @@ class AppPages {
       name: _Paths.DETAIL,
       page: () => const DetailView(),
       binding: DetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.UPC,
+      page: () => const UpcView(),
+      binding: UpcBinding(),
     ),
   ];
 }
