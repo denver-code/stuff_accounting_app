@@ -7,7 +7,6 @@ abstract class Routes {
   static const AUTHORISATION = _Paths.AUTHORISATION;
   static const REGISTRATION = _Paths.REGISTRATION;
   static const DETAIL = _Paths.DETAIL;
-  static const UPC = _Paths.UPC;
 }
 
 abstract class _Paths {
@@ -16,5 +15,4 @@ abstract class _Paths {
   static const AUTHORISATION = '/authorisation';
   static const REGISTRATION = '/registration';
   static const DETAIL = '/detail';
-  static const UPC = '/upc';
 }

@@ -1,3 +1,4 @@
+import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -13,6 +14,74 @@ class HomeController extends GetxController {
   final searchController = TextEditingController();
   List<Item> staticItemList = <Item>[];
   RxList<Item> itemList = RxList<Item>();
+
+  RxString scannedCode = RxString('');
+
+  bool isUpcExist(List<Item> items, String targetUpc) {
+    for (var item in items) {
+      if (item.upc == targetUpc) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  scanBarcode() async {
+    try {
+      final result = await BarcodeScanner.scan();
+      scannedCode.value = result.rawContent;
+      if (scannedCode.value.isEmpty) {
+        return Get.snackbar(
+          "SAA",
+          "Looks like your UPC Barcode are wrong ;[",
+          icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.grey,
+        );
+      }
+      if (isUpcExist(staticItemList, scannedCode.value)) {
+        return Get.snackbar(
+          "SAA",
+          "Looks like this item already in your list!",
+          icon:
+              const Icon(Icons.my_library_books_outlined, color: Colors.white),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.grey,
+        );
+      }
+      final response = await http.get(
+          Uri.parse(
+            '$SERVER_URI/private/items/upc/${scannedCode.value}',
+          ),
+          headers: <String, String>{
+            'Authorisation': storage.read("token"),
+          });
+
+      if (response.statusCode == 200) {
+        Item item = Item.fromJson(json.decode(response.body));
+        saveItems(await fetchItems());
+        loadItems();
+        return Get.snackbar(
+          "SAA",
+          "We added ${item.title} to your collection!",
+          icon:
+              const Icon(Icons.my_library_books_outlined, color: Colors.white),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.grey,
+        );
+      } else {
+        return Get.snackbar(
+          "SAA",
+          "Looks like Item are not exist or we don't have it in our DataBase!",
+          icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.grey,
+        );
+      }
+    } on Exception {
+      return;
+    }
+  }
 
   logout() async {
     storage.remove("token");
@@ -51,8 +120,8 @@ class HomeController extends GetxController {
     }
   }
 
-  void searchItems({search_query}) {
-    final query = search_query.toLowerCase();
+  void searchItems({searchQuery}) {
+    final query = searchQuery.toLowerCase();
     if (query == "") {
       return loadItems();
     }

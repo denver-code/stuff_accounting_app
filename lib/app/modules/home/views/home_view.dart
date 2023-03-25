@@ -12,6 +12,7 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('My Collection'),
         centerTitle: true,
@@ -57,7 +58,7 @@ class HomeView extends GetView<HomeController> {
                 ),
                 child: TextField(
                     onChanged: ((value) {
-                      controller.searchItems(search_query: value);
+                      controller.searchItems(searchQuery: value);
                     }),
                     controller: controller.searchController,
                     decoration: InputDecoration(
@@ -94,9 +95,7 @@ class HomeView extends GetView<HomeController> {
               ),
               FloatingActionButton(
                 heroTag: 'upc_adder',
-                onPressed: () {
-                  Get.toNamed(Routes.UPC);
-                },
+                onPressed: controller.scanBarcode,
                 child: const Icon(Icons.qr_code_rounded),
               ),
               FloatingActionButton(
