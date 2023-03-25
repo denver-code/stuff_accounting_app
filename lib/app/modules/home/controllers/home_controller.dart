@@ -59,8 +59,7 @@ class HomeController extends GetxController {
 
       if (response.statusCode == 200) {
         Item item = Item.fromJson(json.decode(response.body));
-        saveItems(await fetchItems());
-        loadItems();
+        refreshAll();
         return Get.snackbar(
           "SAA",
           "We added ${item.title} to your collection!",
@@ -145,6 +144,37 @@ class HomeController extends GetxController {
     itemList.assignAll(filteredItems);
   }
 
+  deleteItem(Item item) async {
+    final response = await http.delete(
+        Uri.parse(
+          '$SERVER_URI/private/items/${item.id}',
+        ),
+        headers: <String, String>{
+          'Authorisation': storage.read("token"),
+        });
+    if (response.statusCode == 200) {
+      refreshAll();
+      return Get.snackbar("SAA", "Item deleted successfully!",
+          icon: const Icon(Icons.delete_sweep_rounded, color: Colors.white),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.grey,
+          duration: const Duration(seconds: 1));
+    } else {
+      return Get.snackbar(
+        "SAA",
+        "Looks like something went wrong..",
+        icon: const Icon(Icons.error_outline_rounded, color: Colors.white),
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.grey,
+      );
+    }
+  }
+
+  void refreshAll() async {
+    saveItems(await fetchItems());
+    loadItems();
+  }
+
   void clearSearch() {
     searchController.clear();
     loadItems();
@@ -153,9 +183,7 @@ class HomeController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    final items = await fetchItems();
-    saveItems(items);
-    loadItems();
+    refreshAll();
   }
 
   @override

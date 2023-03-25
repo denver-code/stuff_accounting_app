@@ -16,6 +16,14 @@ class HomeView extends GetView<HomeController> {
       appBar: AppBar(
         title: const Text('My Collection'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              controller.refreshAll();
+            },
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -109,15 +117,44 @@ class HomeView extends GetView<HomeController> {
       body: SafeArea(
           child: Obx(() => ListView(
                 children: controller.itemList.map((item) {
-                  return ListTile(
-                    title: Text(item.title),
-                    onTap: () {
-                      Get.toNamed(
-                        Routes.DETAIL,
-                        arguments: item,
-                      );
-                    },
-                  );
+                  return Dismissible(
+                      key: Key(item.id), // Use a unique key for each item
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: const [
+                              Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
+                              Text(
+                                "Delete",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.right,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      onDismissed: (direction) {
+                        controller.deleteItem(item);
+                      },
+                      child: ListTile(
+                        title: Text(item.title),
+                        onTap: () {
+                          Get.toNamed(
+                            Routes.DETAIL,
+                            arguments: item,
+                          );
+                        },
+                      ));
                 }).toList(),
               ))),
     );
